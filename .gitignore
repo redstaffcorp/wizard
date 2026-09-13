@@ -1,0 +1,52 @@
+# ---- Godot 4+ ----
+# Imported/cached assets - fully regenerated from the source files by the
+# editor, never hand-edited, and full of machine-specific absolute paths.
+.godot/
+.import/
+
+# Android export scaffolding (Gradle project + build output) - regenerated
+# by Godot's Android export/build step, huge, and platform/machine specific.
+/android/
+
+# Export presets can hold local paths/credentials for some setups; the
+# actual compiled build output below is the real transient part.
+export_credentials.cfg
+
+# Compiled/exported game builds - binaries, never source.
+*.apk
+*.aab
+*.exe
+*.pck
+*.zip
+*.dmg
+*.app
+*.ipa
+*.exp
+*.exp.cache
+
+# Mono/.NET leftovers (kept even though the project is pure GDScript now, in
+# case a build tool regenerates one of these paths again).
+.mono/
+data_*/
+mono_crash.*.json
+*.csproj
+*.sln
+bin/
+obj/
+
+# ---- OS junk ----
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# ---- Editors/IDEs ----
+.vs/
+.vscode/
+*.swp
+*~
