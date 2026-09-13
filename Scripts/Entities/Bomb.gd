@@ -3,9 +3,10 @@ extends Node2D
 
 ## The payoff of the bomb resource: dropped at the player's feet (see
 ## PlayerHuman._try_place_bomb), sits and blinks through a short fuse, then
-## hands off to LevelRoot.detonate_bomb for the actual damage/wall-break
-## and removes itself. Deliberately has no collision of its own - it
-## doesn't block movement, it just counts down.
+## hands off to LevelRoot.detonate_bomb for the actual area-damage (no wall
+## breaking - a bomb is a pure damage tool) and removes itself. Deliberately
+## has no collision of its own - it doesn't block movement, it just counts
+## down.
 
 var owner_index: int = 0
 var fuse_time: float = 1.6

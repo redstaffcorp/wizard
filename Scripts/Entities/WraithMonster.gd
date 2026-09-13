@@ -4,6 +4,8 @@ extends Monster
 ## Wanders normally, but periodically turns translucent and passes
 ## straight through walls for a short burst before returning to normal.
 ## Unlocked from level 5 onward - the "escape artist" of the bunch.
+## Lore-wise: a living seam of the asteroid's own mineral vein, spectral
+## enough to phase through the surrounding rock at will.
 
 var _dir: Vector2i = Vector2i.ZERO
 var _rng: RandomNumberGenerator = RandomNumberGenerator.new()
@@ -14,7 +16,7 @@ var _phase_cooldown: float = 4.0
 func _ready() -> void:
 	super._ready()
 	_rng.randomize()
-	body_color = Color(0.75, 0.75, 0.8) # pale grey
+	body_color = Color(0.72, 0.8, 0.95) # pale icy blue-grey - a "mineral spirit"
 	score_value = 300
 	speed = 100.0
 
@@ -71,6 +73,15 @@ func _pick_dir(cell: Vector2i) -> Vector2i:
 func draw_shape() -> void:
 	var pts := DrawUtil.ghost_shape(13.0)
 	draw_colored_polygon(pts, body_color)
+
+	# A couple of jagged crystal shards on top - ties the "phases through
+	# rock" trick to the asteroid's own minerals instead of reading as a
+	# generic ghost. Kept short (tip at y=-16) so they don't poke past the
+	# 32px-tall corridors - see the sizing note on WardenMonster.draw_shape.
+	var shard_color: Color = body_color.lightened(0.2)
+	draw_colored_polygon(PackedVector2Array([Vector2(-6, -12), Vector2(-3, -16), Vector2(-1, -12)]), shard_color)
+	draw_colored_polygon(PackedVector2Array([Vector2(2, -12), Vector2(5, -16.3), Vector2(7, -12)]), shard_color)
+
 	var look: Vector2 = Vector2(_dir.x, _dir.y) if _dir != Vector2i.ZERO else velocity
 	if phasing:
 		# No sclera while phased through walls - hollow glowing eyes read

@@ -16,8 +16,15 @@ class LevelParams:
 	var hunter_ratio: float
 
 static func for_level(level: int) -> LevelParams:
-	var cols: int = clampi(9 + (level - 1) * 2, 9, 19)
-	var rows: int = clampi(7 + (level - 1) * 2, 7, 15)
+	# The first few levels deliberately stay at the smallest maze size -
+	# laci's feedback was that early levels shouldn't force a big/complex
+	# maze on a player who's still getting comfortable with the controls
+	# and mechanics. Size growth only starts from level 4 onward, at the
+	# same +2/level pace as before, so the late-game cap (19x15) is still
+	# reached eventually, just a few levels later than it used to be.
+	var grown_levels: int = maxi(0, level - 3)
+	var cols: int = clampi(9 + grown_levels * 2, 9, 19)
+	var rows: int = clampi(7 + grown_levels * 2, 7, 15)
 	if cols % 2 == 0:
 		cols += 1
 	if rows % 2 == 0:

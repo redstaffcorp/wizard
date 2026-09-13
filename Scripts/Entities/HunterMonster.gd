@@ -3,7 +3,9 @@ extends Monster
 
 ## Chases the nearest player through the maze using the shared pathfinding
 ## graph. More dangerous than the Skulker but still blind to walls it
-## can't path around.
+## can't path around. Lore-wise: a real predator living in the tunnels,
+## not just vermin - the reason the asteroid needs "pacifying" before the
+## crew can mine it safely.
 
 var _path: Array[Vector2] = []
 var _repath_timer: float = 0.0
@@ -56,10 +58,22 @@ func _repath_to_nearest_player() -> void:
 		_path.append_array(maze_ref.find_path(global_position, nearest.global_position))
 
 func draw_shape() -> void:
-	draw_colored_polygon(DrawUtil.regular_polygon(5, 14.0, -PI / 2.0), body_color)
-	DrawUtil.draw_face(self, velocity, -4.0, 5.0)
+	var trim := body_color.darkened(0.45)
+	draw_colored_polygon(DrawUtil.regular_polygon(5, 13.0, -PI / 2.0), body_color)
+
+	# Dorsal spikes along the back ridge - reads as a predator stalking the
+	# tunnels, not just a colored pentagon.
+	draw_line(Vector2(-4, -12), Vector2(-4, -15.5), trim, 1.8)
+	draw_line(Vector2(0, -13), Vector2(0, -16.3), trim, 1.8)
+	draw_line(Vector2(4, -12), Vector2(4, -15.5), trim, 1.8)
+
+	# A whip-tail trailing away from its direction of travel.
+	var tail_dir: Vector2 = -velocity.normalized() if velocity.length() > 1.0 else Vector2.DOWN
+	draw_line(Vector2.ZERO, tail_dir * 9.0, trim, 2.0)
+
 	# Angled "eyebrows" over the eyes - a quick, cheap way to read as
 	# aggressive, matching that this is the one that relentlessly chases.
-	var trim := body_color.darkened(0.45)
-	draw_line(Vector2(-8, -8.5), Vector2(-2.5, -6.5), trim, 1.8)
-	draw_line(Vector2(8, -8.5), Vector2(2.5, -6.5), trim, 1.8)
+	draw_line(Vector2(-8, -6.5), Vector2(-2.5, -4.5), trim, 1.8)
+	draw_line(Vector2(8, -6.5), Vector2(2.5, -4.5), trim, 1.8)
+
+	DrawUtil.draw_glow_eyes(self, velocity, Color(1.0, 0.25, 0.2), -3.0, 5.0, 1.8)

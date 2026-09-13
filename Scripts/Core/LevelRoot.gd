@@ -320,32 +320,33 @@ func _rebuild_wall_visuals() -> void:
 ## The bomb payoff: damages anyone standing in the blast (players take 2
 ## HP, same tier as a monster's touch; monsters take 3 - enough to
 ## one-shot even a 3-HP guardian, so a bomb is the hard counter to a
-## Warden/Sentry turtling on its cache), then blows open the up to four
-## walls immediately around the blast cell. Breaking a wall only ever adds
-## a connection, so unlike try_alter_wall this needs no would_disconnect
-## check.
+## Warden/Sentry turtling on its cache). Does NOT touch walls - a bomb is
+## purely an area-damage tool, not a wall-editing shortcut (that's what
+## the dedicated wall resource/try_alter_wall is for).
+##
+## A target only takes damage if it's both within `radius` AND has a clear
+## line of sight to the blast center (_has_line_of_sight) - plain distance
+## alone let a bomb hit someone standing right behind a wall in the next
+## cell over, which reads as the wall doing nothing. A straight-line
+## raycast against the wall collision layer is enough here since blast
+## radius (90px) never reaches past one cell (CELL_SIZE 64px) anyway.
 func detonate_bomb(pos: Vector2, owner_index: int, radius: float) -> void:
 	SoundManager.play_explosion()
 	EffectsFactory.spawn_death(self, pos, Color(1.0, 0.55, 0.1))
 
+	var space_state: PhysicsDirectSpaceState2D = get_world_2d().direct_space_state
+
 	for n in get_tree().get_nodes_in_group("players"):
-		if n is Player and is_instance_valid(n) and n.global_position.distance_to(pos) <= radius:
+		if n is Player and is_instance_valid(n) and n.global_position.distance_to(pos) <= radius and _has_line_of_sight(space_state, pos, n.global_position):
 			n.hit(n.player_index != owner_index, 2)
 	for n in get_tree().get_nodes_in_group("monsters"):
-		if n is Monster and is_instance_valid(n) and n.global_position.distance_to(pos) <= radius:
+		if n is Monster and is_instance_valid(n) and n.global_position.distance_to(pos) <= radius and _has_line_of_sight(space_state, pos, n.global_position):
 			n.take_damage(3, owner_index)
 
-	if graph == null:
-		return
-	var cell: Vector2i = graph.world_to_cell(pos)
-	var neighbors: Array[Vector2i] = [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]
-	var changed: bool = false
-	for d in neighbors:
-		var nb: Vector2i = cell + d
-		if nb.x < 0 or nb.x >= data.cols or nb.y < 0 or nb.y >= data.rows:
-			continue
-		if graph.is_wall_between(cell, nb):
-			graph.set_wall_between(cell, nb, false)
-			changed = true
-	if changed:
-		_rebuild_wall_visuals()
+## True if nothing on the wall collision layer sits between `from` and
+## `to` - walls are the only thing on layer 1 that a straight blast-radius
+## check could otherwise ignore (see detonate_bomb).
+func _has_line_of_sight(space_state: PhysicsDirectSpaceState2D, from: Vector2, to: Vector2) -> bool:
+	var query := PhysicsRayQueryParameters2D.create(from, to, 1) # layer 1 = walls only
+	var result: Dictionary = space_state.intersect_ray(query)
+	return result.is_empty()

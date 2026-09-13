@@ -3,7 +3,8 @@ extends Monster
 
 ## Wanders like the Skulker, but periodically checks for a clear, straight
 ## line of sight to a player along a corridor and fires a bullet. Unlocked
-## from level 3 onward.
+## from level 3 onward. Lore-wise: a bloated, bio-cannon alien that has
+## evolved to spit hardened rounds down the tunnels it lives in.
 
 var _dir: Vector2i = Vector2i.ZERO
 var _rng: RandomNumberGenerator = RandomNumberGenerator.new()
@@ -90,11 +91,22 @@ func _pick_dir(cell: Vector2i) -> Vector2i:
 	return maze_ref.random_open_neighbor_dir(cell, _rng)
 
 func draw_shape() -> void:
-	draw_colored_polygon(DrawUtil.regular_polygon(6, 14.0), body_color)
-	var look: Vector2 = velocity if velocity.length() > 0.5 else _aim_dir
-	# A short barrel nub pointing the way it last fired/is moving, so its
-	# "I shoot at range" role reads even while it's standing still.
 	var trim := body_color.darkened(0.4)
+	var look: Vector2 = velocity if velocity.length() > 0.5 else _aim_dir
 	var barrel_dir: Vector2 = look.normalized() if look.length() > 0.01 else Vector2.DOWN
-	draw_line(Vector2.ZERO, barrel_dir * 18.0, trim, 3.0)
-	DrawUtil.draw_face(self, look)
+
+	draw_colored_polygon(DrawUtil.regular_polygon(6, 13.0), body_color)
+
+	# Fleshy blisters and back spines - a "bio-cannon" creature rather than
+	# a plain hexagon.
+	draw_circle(Vector2(-8, 6), 3.0, body_color.darkened(0.15))
+	draw_circle(Vector2(8, 6), 3.0, body_color.darkened(0.15))
+	draw_line(Vector2(-6, -10), Vector2(-9, -14), trim, 1.6)
+	draw_line(Vector2(6, -10), Vector2(9, -14), trim, 1.6)
+
+	# The proboscis-cannon, always pointing the way it last fired/is
+	# heading, so its "shoots at range" role reads even standing still.
+	draw_line(Vector2.ZERO, barrel_dir * 12.0, trim, 3.0)
+	draw_circle(barrel_dir * 12.0, 1.8, Color(1.0, 0.4, 0.9))
+
+	DrawUtil.draw_glow_eyes(self, look, Color(1.0, 0.4, 0.9), -4.0, 5.0, 1.8)

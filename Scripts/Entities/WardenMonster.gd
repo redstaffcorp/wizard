@@ -5,7 +5,8 @@ extends Monster
 ## stands watch over its spawn point (anchor) and only leaves it to chase
 ## off a player who gets close, returning once they retreat. Takes 3 hits
 ## to put down and doesn't count toward clearing the level, since the loot
-## it guards is optional.
+## it guards is optional. Lore-wise: a heavily armored alien that has
+## staked a claim on a rich ore deposit and won't give it up quietly.
 
 func get_max_monster_hp() -> int:
 	return 3
@@ -64,19 +65,28 @@ func _repath() -> void:
 	if maze_ref != null:
 		_path.append_array(maze_ref.find_path(global_position, goal))
 
+## Note on sizing: the maze's corridors are only 32px tall/wide between
+## walls (LevelRoot._build_walls uses CELL_SIZE/2 per wall-grid unit), so
+## everything here stays within about +/-15px of center - an earlier pass
+## at this shape (17px body radius, tusks, HP pips floating at y=-30) blew
+## way past that and stuck out of the tunnels it patrols (same class of
+## bug the player's space-suit redesign had before it was scaled down).
 func draw_shape() -> void:
-	var pts := DrawUtil.regular_polygon(8, 17.0)
-	draw_colored_polygon(pts, body_color)
-
-	# Two small tusks - a cheap way to read as "bulky guard/tank", to go
-	# with it being the toughest, slowest-to-provoke monster type.
 	var trim := body_color.darkened(0.35)
-	draw_line(Vector2(-9, -2), Vector2(-13, 6), trim, 2.5)
-	draw_line(Vector2(9, -2), Vector2(13, 6), trim, 2.5)
+	draw_colored_polygon(DrawUtil.regular_polygon(8, 13.0), body_color)
 
-	DrawUtil.draw_face(self, velocity, -8.0, 6.5, 3.6, 1.8)
+	# Armor ridge plates along the back - reads as a heavily armored guard.
+	draw_rect(Rect2(-9, -13, 6, 3), trim)
+	draw_rect(Rect2(3, -13, 6, 3), trim)
 
-	# Small HP pips instead of a health bar - enough to tell it's wounded
-	# without adding a proper UI element for one monster type.
+	# Two tusks - a cheap way to read as "bulky guard/tank", to go with it
+	# being the toughest, slowest-to-provoke monster type.
+	draw_line(Vector2(-7, -1), Vector2(-11, 6), trim, 2.5)
+	draw_line(Vector2(7, -1), Vector2(11, 6), trim, 2.5)
+
+	DrawUtil.draw_glow_eyes(self, velocity, Color(1.0, 0.65, 0.15), -6.0, 5.5, 2.2)
+
+	# Small HP pips, kept on the body (not floating above it) so they never
+	# poke into a wall.
 	for i in range(_current_monster_hp):
-		draw_circle(Vector2(-8 + i * 8, -30), 2.5, Color.WHITE)
+		draw_circle(Vector2(-8 + i * 8, -9), 1.8, Color.WHITE)

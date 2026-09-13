@@ -2,7 +2,9 @@ class_name Hud
 extends CanvasLayer
 
 ## Minimal on-screen UI: scores/lives/level for both players, plus a
-## centered banner for "LEVEL n / READY?" and "GAME OVER".
+## centered banner for "ASTEROID n / READY?" and "GAME OVER" - each level
+## is a new asteroid per the game's lore, so "LEVEL" reads as "ASTEROID"
+## everywhere in the UI.
 
 var _p1_label: Label
 var _p2_label: Label
@@ -16,7 +18,7 @@ func _ready() -> void:
 
 	_p1_label = _make_label(Vector2(16, 10), "P1 SCORE: 0  LIVES: 3")
 	_p2_label = _make_label(Vector2(16, 36), "CPU SCORE: 0  LIVES: 3")
-	_level_label = _make_label(Vector2(16, 62), "LEVEL 1")
+	_level_label = _make_label(Vector2(16, 62), "ASTEROID 1")
 	root.add_child(_p1_label)
 	root.add_child(_p2_label)
 	root.add_child(_level_label)
@@ -54,7 +56,7 @@ func _update_labels() -> void:
 		gm.resources_p2, GameManager.MAX_RESOURCES,
 		gm.bomb_resources_p2, GameManager.MAX_BOMB_RESOURCES,
 	]
-	_level_label.text = "LEVEL %d" % gm.level
+	_level_label.text = "ASTEROID %d" % gm.level
 
 static func _hearts(hp: int) -> String:
 	hp = clampi(hp, 0, GameManager.MAX_HP)
@@ -63,7 +65,7 @@ static func _hearts(hp: int) -> String:
 func show_level_banner(level: int) -> void:
 	SoundManager.play_level_start()
 	_update_labels()
-	_banner_label.text = "LEVEL %d\nREADY?" % level
+	_banner_label.text = "ASTEROID %d\nREADY?" % level
 	_banner_label.visible = true
 	await get_tree().create_timer(1.4).timeout
 	_banner_label.visible = false

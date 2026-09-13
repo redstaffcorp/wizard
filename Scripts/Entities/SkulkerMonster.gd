@@ -2,7 +2,9 @@ class_name SkulkerMonster
 extends Monster
 
 ## Base wandering monster: picks a random open direction at every
-## intersection. Slow and simple, present from level 1.
+## intersection. Slow and simple, present from level 1. Lore-wise: small
+## vermin that infest a newly-opened asteroid tunnel - the mining crew's
+## most common, least dangerous nuisance.
 
 var _dir: Vector2i = Vector2i.ZERO
 var _rng: RandomNumberGenerator = RandomNumberGenerator.new()
@@ -48,12 +50,27 @@ func _pick_dir(cell: Vector2i) -> Vector2i:
 	return maze_ref.random_open_neighbor_dir(cell, _rng)
 
 func draw_shape() -> void:
-	draw_colored_polygon(DrawUtil.regular_polygon(7, 13.0), body_color)
-	# Two little antennae - reads as "a small critter", distinct from the
-	# smooth-topped Hunter/Blaster silhouettes.
 	var trim := body_color.darkened(0.4)
-	draw_line(Vector2(-5, -11), Vector2(-8, -18), trim, 1.6)
-	draw_line(Vector2(5, -11), Vector2(8, -18), trim, 1.6)
-	draw_circle(Vector2(-8, -18), 1.6, trim)
-	draw_circle(Vector2(8, -18), 1.6, trim)
-	DrawUtil.draw_face(self, velocity)
+	var dark := body_color.darkened(0.55)
+
+	# A small rear abdomen segment, drawn behind the thorax - reads as a
+	# scuttling bug/grub rather than a bare polygon.
+	draw_colored_polygon(DrawUtil.offset_points(DrawUtil.regular_polygon(6, 6.0), Vector2(0, 7)), dark)
+
+	draw_colored_polygon(DrawUtil.regular_polygon(7, 11.0), body_color)
+
+	# Three pairs of thin jointed legs splayed to the sides.
+	for i in range(3):
+		var ly: float = -4.0 + i * 4.0
+		draw_line(Vector2(-9, ly), Vector2(-15, ly + 3.0), trim, 1.6)
+		draw_line(Vector2(9, ly), Vector2(15, ly + 3.0), trim, 1.6)
+
+	# Antennae.
+	draw_line(Vector2(-4, -10), Vector2(-7, -15), trim, 1.6)
+	draw_line(Vector2(4, -10), Vector2(7, -15), trim, 1.6)
+	draw_circle(Vector2(-7, -15), 1.4, trim)
+	draw_circle(Vector2(7, -15), 1.4, trim)
+
+	# Glowing insectoid eyes instead of a human-style face - reads as
+	# "alien vermin" rather than a cartoon critter.
+	DrawUtil.draw_glow_eyes(self, velocity, Color(1.0, 0.85, 0.3), -6.0, 4.0, 1.8)

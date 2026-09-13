@@ -142,7 +142,8 @@ func draw_shape() -> void:
 
 	# Visibly turns red once hostile, so it's obvious that's dangerous -
 	# but friendly vs. neutral look identical, so those have to be read
-	# from behavior instead. The star badge is a constant, mood-independent
-	# way to tell "the teammate" apart from the human at a glance.
+	# from behavior instead. The badge (pink shoulder trim + pink HUD eyes)
+	# is a constant, mood-independent way to tell "the teammate" apart from
+	# the human at a glance.
 	var color: Color = Color(0.9, 0.25, 0.2) if GameManager.mood == GameManager.AiMood.HOSTILE else body_color
-	DrawUtil.draw_wizard(self, color, facing_dir, true)
+	DrawUtil.draw_space_miner(self, color, facing_dir, true)

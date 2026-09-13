@@ -3,7 +3,13 @@ extends MazeActor
 
 ## Base for all enemy types. None of these are meant to resemble any
 ## existing game's characters - they're original names/shapes/colors:
-## Skulker (wanderer), Hunter (chaser), Blaster (ranged), Wraith (phaser).
+## Skulker (wanderer), Hunter (chaser), Blaster (ranged), Wraith (phaser),
+## Warden/Sentry (resource guardians). Lore: each level is a freshly
+## opened asteroid, and these are the alien life that has to be cleared
+## out ("pacified") before the mining crew (the two Player characters,
+## see DrawUtil.draw_space_miner) can work the tunnels safely - same as
+## the players, every creature here is built from several drawn parts
+## (body + eyes + a signature feature) instead of a bare colored polygon.
 
 var score_value: int = 100
 var body_color: Color = Color.ORANGE_RED

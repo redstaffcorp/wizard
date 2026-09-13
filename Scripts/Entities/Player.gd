@@ -3,10 +3,11 @@ extends MazeActor
 
 ## Base for both the human-controlled and the AI-controlled character.
 ## Neither looks like anything from the original arcade game: both are
-## drawn as a small hat-and-robe "wizard" figure (see DrawUtil.draw_wizard),
-## still just primitive shapes composed in code, no external art assets.
-## Movement reads through get_desired_direction()/wants_to_shoot() so input
-## can later come from touch controls without touching this class.
+## drawn as a stocky space-suit miner with a heavy cannon (see
+## DrawUtil.draw_space_miner), still just primitive shapes composed in
+## code, no external art assets. Movement reads through
+## get_desired_direction()/wants_to_shoot() so input can later come from
+## touch controls without touching this class.
 
 @export var player_index: int = 0 # 0 = P1 (human), 1 = P2 (CPU)
 var body_color: Color = Color.LIME_GREEN
@@ -121,4 +122,4 @@ func draw_shape() -> void:
 	if invulnerable and int(Time.get_ticks_msec() / 100) % 2 == 0:
 		return # blink while invulnerable
 
-	DrawUtil.draw_wizard(self, body_color, facing_dir)
+	DrawUtil.draw_space_miner(self, body_color, facing_dir)

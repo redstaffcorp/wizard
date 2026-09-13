@@ -7,7 +7,8 @@ extends Monster
 ## whenever a player lines up along a clear straight corridor, it shoots
 ## (same raycast line-of-sight trick as BlasterMonster). Takes 3 hits to
 ## put down and doesn't count toward clearing the level, since the loot it
-## guards is optional.
+## guards is optional. Lore-wise: a rooted, plant-like alien that anchors
+## itself over a deposit and defends it at range instead of chasing.
 
 func get_max_monster_hp() -> int:
 	return 3
@@ -71,17 +72,28 @@ func _try_shoot_at_player() -> void:
 			_aim_dir = dir
 			break
 
+## See the sizing note on WardenMonster.draw_shape() - the corridors are
+## only 32px tall/wide, so this stays within about +/-15px including the
+## barrel at full reach (the original 16px body + 19px barrel + HP pips at
+## y=-28 badly overshot that).
 func draw_shape() -> void:
-	var pts := DrawUtil.regular_polygon(4, 16.0, PI / 4.0)
-	draw_colored_polygon(pts, body_color)
+	var trim := body_color.darkened(0.4)
+
+	# Root tendrils anchoring it to the rock - reinforces that it never
+	# moves, unlike every other monster type.
+	draw_line(Vector2(-6, 9), Vector2(-9, 14), trim, 2.0)
+	draw_line(Vector2(6, 9), Vector2(9, 14), trim, 2.0)
+	draw_line(Vector2(0, 10), Vector2(0, 15), trim, 2.0)
+
+	draw_colored_polygon(DrawUtil.regular_polygon(4, 12.0, PI / 4.0), body_color)
 
 	# A turret barrel pointing the way it last fired - never moves, so this
 	# is the only cue for "this is an aimed, ranged guardian".
-	var trim := body_color.darkened(0.4)
-	draw_line(Vector2.ZERO, _aim_dir * 19.0, trim, 3.4)
-	DrawUtil.draw_face(self, _aim_dir, -7.0, 5.5, 3.2, 1.6)
+	draw_line(Vector2.ZERO, _aim_dir * 11.0, trim, 3.2)
+	draw_circle(_aim_dir * 11.0, 1.8, Color(0.4, 1.0, 0.9))
 
-	# Small HP pips, same trick as WardenMonster, instead of a proper
-	# health bar for one monster type.
+	DrawUtil.draw_glow_eyes(self, _aim_dir, Color(0.4, 1.0, 0.9), -6.0, 5.0, 2.0)
+
+	# Small HP pips, kept on the body instead of floating above it.
 	for i in range(_current_monster_hp):
-		draw_circle(Vector2(-8 + i * 8, -28), 2.5, Color.WHITE)
+		draw_circle(Vector2(-8 + i * 8, -8), 1.8, Color.WHITE)
